@@ -1,0 +1,68 @@
+<div class="analytics-container">
+  <h2>Visitor Analytics</h2>
+  
+  <div class="timeframe-selector">
+    <div class="time-buttons">
+      <button [class.active]="selectedTimeframe === '7d'" (click)="selectTimeframe('7d')">7 Days</button>
+      <button [class.active]="selectedTimeframe === '30d'" (click)="selectTimeframe('30d')">30 Days</button>
+      <button [class.active]="selectedTimeframe === '3m'" (click)="selectTimeframe('3m')">3 Months</button>
+      <button [class.active]="selectedTimeframe === '6m'" (click)="selectTimeframe('6m')">6 Months</button>
+      <button [class.active]="selectedTimeframe === '1y'" (click)="selectTimeframe('1y')">1 Year</button>
+    </div>
+  </div>
+  
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading visitor analytics data...</p>
+  </div>
+  
+  <!-- Error state -->
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="retryLoading()">Try Again</button>
+  </div>
+  
+  <!-- Data display -->
+  <div *ngIf="!loading && !error && visitorData" class="analytics-content">
+    <!-- Summary metrics -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <h3>Total Visitors</h3>
+        <div class="metric-value">{{ visitorData.totalVisitors }}</div>
+        <div class="metric-label">{{ getTimeframeLabel() }}</div>
+      </div>
+      
+      <div class="metric-card">
+        <h3>Monthly Visitors</h3>
+        <div class="metric-value">{{ visitorData.monthlyVisitors }}</div>
+        <div class="metric-label">Average per month</div>
+      </div>
+    </div>
+    
+    <!-- Country breakdown -->
+    <div class="country-section">
+      <h3>Visitors by Country</h3>
+      
+      <div class="countries-list">
+        <div *ngIf="getSortedCountries().length === 0" class="no-data">
+          No country data available for this period
+        </div>
+        
+        <div *ngFor="let country of getSortedCountries(); let i = index" class="country-item">
+          <div class="country-rank">{{ i + 1 }}</div>
+          <div class="country-name">{{ country.name }}</div>
+          <div class="country-bar-container">
+            <div class="country-bar" [style.width.%]="getCountryPercentage(country.count)"></div>
+          </div>
+          <div class="country-count">{{ country.count }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- No data state -->
+  <div *ngIf="!loading && !error && !visitorData" class="no-data-message">
+    <p>No visitor data available for the selected period.</p>
+  </div>
+</div> 
